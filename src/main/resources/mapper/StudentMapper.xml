@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mecol.dormitory.dao.StudentDao">
+    <!--映射student对象的resultMap-->
+    <resultMap id="studentResultMap" type="com.mecol.dormitory.entity.Student">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="address" column="address"/>
+        <result property="note" column="note"/>
+        <result property="level" column="level"/>
+        <result property="sex" column="sex"/>
+        <result property="birthday" column="birthday"/>
+        <result property="className" column="className"/>
+        <result property="dormitoryId" column="tb_s_dormitoryId"/>
+
+
+        <association property="dormitory" javaType="com.mecol.dormitory.entity.Dormitory">
+            <id property="dormitoryId" column="dormitoryId"/>
+            <result property="dormitoryNumber" column="dormitoryNumber"/>
+        </association>
+    </resultMap>
+
+    <select id="getStudentByUsername" resultType="com.mecol.dormitory.entity.Student">
+        select * from tb_student where username=#{username}
+    </select>
+
+
+    <select id="login" resultType="com.mecol.dormitory.entity.Student">
+        select * from tb_student
+        <where>
+            <if test="username!=null">
+                and username=#{username}
+            </if>
+            <if test="password!=null">
+                and password=#{password}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getAllStudentList" resultMap="studentResultMap"
+            parameterType="com.mecol.dormitory.entity.StudentSearch">
+        select
+        tb_student.id,
+        tb_student.username,
+        tb_student.address,
+        tb_student.birthday,
+        tb_student.email,
+        tb_student.phone,
+        tb_student.sex,
+        tb_student.level,
+        tb_student.note,
+        tb_student.className,
+        tb_student.roleId,
+        tb_student.dormitoryId as tb_s_dormitoryId,
+
+
+
+
+
+        tb_dormitory.dormitoryNumber,
+        tb_dormitory.dormitoryId
+
+        from tb_student  ,tb_dormitory
+        <trim prefix="where" prefixOverrides="and|or">
+            tb_student.dormitoryId=tb_dormitory.dormitoryId
+            <if test="null != username and '' != username">
+                and username like  "%"#{username}"%"
+            </if>
+            <if test="null != sex and -1 != sex">
+                and sex = #{sex}
+            </if>
+
+            <if test="null != dormitoryId and '' != dormitoryId">
+                and tb_student.dormitoryId = #{dormitoryId}
+            </if>
+
+
+            <if test="null != birthdayStart and null != birthdayEnd and '' != birthdayStart and '' != birthdayEnd">
+                and birthday between #{birthdayStart} and #{birthdayEnd}
+            </if>
+            <if test="'' != birthdayStart and '' == birthdayEnd">
+                and birthday between #{birthdayStart} and curtime()
+            </if>
+            <if test="'' == birthdayStart and '' != birthdayEnd">
+                and birthday between '1900-01-01' and #{birthdayEnd}
+            </if>
+        </trim>
+
+        order by id
+
+    </select>
+
+    <select id="getStudentBySIdAndDId" resultType="com.mecol.dormitory.entity.Student">
+        select * from tb_student where id=#{studentId} and dormitoryId=#{dormitoryId}
+    </select>
+
+
+    <select id="getAllStudent" resultType="com.mecol.dormitory.entity.Student">
+        select * from tb_student
+    </select>
+
+
+    <select id="selStudentByStudentname" resultType="com.mecol.dormitory.entity.Student">
+        select * from tb_student where username=#{username}
+    </select>
+
+    <insert id="insertStudent" parameterType="com.mecol.dormitory.entity.Student">
+        insert into tb_student
+                (username,sex,birthday,className,dormitoryId,phone,address,email,level,note,
+                password,roleId)
+        values (#{username},#{sex},#{birthday},#{className},#{dormitoryId},#{phone},#{address},
+                #{email},#{level},#{note},#{password},#{roleId})
+
+    </insert>
+
+
+
+    <select id="getStudentByDormitoryId" resultMap="studentResultMap">
+        select * from tb_student where dormitoryId=#{dormitoryId}
+    </select>
+
+    <delete id="deleteStudentById">
+        delete from tb_student where id=#{id}
+    </delete>
+
+    <select id="getStudentById" resultType="com.mecol.dormitory.entity.Student">
+        select * from tb_student where id=#{id}
+    </select>
+
+    <update id="updateStudent" parameterType="com.mecol.dormitory.entity.Student">
+        update tb_student
+        <set>
+
+            <if test="username != null">
+                username = #{username},
+            </if>
+
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="note != null">
+                note = #{note},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="level != null">
+                level = #{level},
+            </if>
+            <if test="className != null">
+                className = #{className},
+            </if>
+            <if test="dormitoryId != null">
+                dormitoryId = #{dormitoryId},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

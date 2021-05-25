@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mecol.dormitory.dao.PayDao">
+
+    <resultMap id="payResultMap" type="com.mecol.dormitory.entity.Pay">
+        <id property="payId" column="payId"/>
+        <result property="payTime" column="payTime"/>
+
+        <result property="payStatus" column="payStatus"/>
+        <result property="payName" column="payName"/>
+        <result property="total" column="total"/>
+        <result property="payType" column="payType"/>
+        <result property="payStartTime" column="payStartTime"/>
+        <result property="payEndTime" column="payEndTime"/>
+        <result property="dormitoryId" column="dormitoryId"/>
+
+        <association property="dormitory" javaType="com.mecol.dormitory.entity.Dormitory">
+            <id property="dormitoryId" column="dormitoryId"/>
+            <result property="dormitoryNumber" column="dormitoryNumber"/>
+        </association>
+
+    </resultMap>
+
+
+
+    <select id="getStuWPayList" resultMap="payResultMap">
+        select * from tb_pay ,tb_dormitory
+        where  tb_pay.dormitoryId=tb_dormitory.dormitoryId
+        and  tb_pay.payName=1 and tb_pay.dormitoryId=#{dormitoryId}
+    </select>
+
+
+
+    <select id="getStuEPayList" resultMap="payResultMap">
+        select * from tb_pay ,tb_dormitory
+        where  tb_pay.dormitoryId=tb_dormitory.dormitoryId
+        and  tb_pay.payName=2 and tb_pay.dormitoryId=#{dormitoryId}
+    </select>
+
+
+    <select id="getEPayList" resultMap="payResultMap">
+        select * from tb_pay ,tb_dormitory
+        where  tb_pay.dormitoryId=tb_dormitory.dormitoryId
+        and  tb_pay.payName=2
+    </select>
+
+
+    <select id="getWPayList" resultMap="payResultMap">
+        select * from tb_pay ,tb_dormitory
+        where  tb_pay.dormitoryId=tb_dormitory.dormitoryId
+        and  tb_pay.payName=1
+    </select>
+
+
+    <select id="getUserPayList" resultMap="payResultMap">
+        select * from tb_pay ,tb_room , tb_user
+        where  tb_pay.dormitory_id=tb_room.dormitory_id and tb_pay.student_id=#{student_id} and tb_user.student_id=#{student_id} and tb_pay.payStatus=1
+    </select>
+
+
+    <select id="getUserNoPayList" resultMap="payResultMap">
+        select * from tb_pay ,tb_room , tb_user
+        where  tb_pay.dormitory_id=tb_room.dormitory_id and tb_pay.student_id=#{student_id} and tb_user.student_id=#{student_id} and tb_pay.payStatus=0
+    </select>
+
+
+    <select id="getAdminNoPayList" resultMap="payResultMap">
+        select * from tb_pay ,tb_room , tb_user
+        where  tb_pay.dormitory_id=tb_room.dormitory_id and tb_pay.student_id=tb_user.student_id and tb_pay.payStatus=0
+    </select>
+
+
+    <select id="getAdminPayList" resultMap="payResultMap">
+        select * from tb_pay ,tb_room , tb_user
+        where  tb_pay.dormitory_id=tb_room.dormitory_id and tb_pay.student_id=tb_user.student_id and tb_pay.payStatus=1
+    </select>
+    <delete id="delNoPay">
+        delete from tb_pay where payId=#{payId}
+    </delete>
+
+
+    <delete id="delWPay">
+        delete from tb_pay where payId=#{payId}
+    </delete>
+
+    <insert id="insPay" parameterType="com.mecol.dormitory.entity.Pay">
+
+        insert  into tb_pay(payTime,dormitoryId,payStatus,payName,payType,payStartTime,payEndTime,
+        student_id,total) values (#{payTime},#{dormitoryId},#{payStatus},#{payName},#{payType},
+        #{payStartTime},#{payEndTime},#{student_id},#{total})
+
+    </insert>
+
+    <select id="getPayById" resultType="com.mecol.dormitory.entity.Pay">
+        select * from tb_pay where payId=#{payId}
+    </select>
+
+
+    <update id="updatePay" parameterType="com.mecol.dormitory.entity.Pay">
+        update tb_pay
+        <set>
+            <if test="payTime!=null">
+                payTime=#{payTime},
+            </if>
+            <if test="dormitoryId!=null">
+                dormitoryId=#{dormitoryId},
+            </if>
+            <if test="payStatus!=null">
+                payStatus=#{payStatus},
+            </if>
+            <if test="payName!=null">
+                payName=#{payName},
+            </if>
+            <if test="payType!=null">
+                payType=#{payType},
+            </if>
+            <if test="payStartTime!=null">
+                payStartTime=#{payStartTime},
+            </if>
+            <if test="payEndTime!=null">
+                payEndTime=#{payEndTime},
+            </if>
+            <if test="student_id!=null">
+                student_id=#{student_id},
+            </if>
+            <if test="total!=null">
+                total=#{total},
+            </if>
+        </set>
+        where payId=#{payId}
+    </update>
+
+
+
+</mapper>

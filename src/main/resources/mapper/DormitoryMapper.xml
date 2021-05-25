@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mecol.dormitory.dao.DormitoryDao">
+
+    <resultMap id="dormitoryResultMap" type="com.mecol.dormitory.entity.Dormitory">
+        <id property="dormitoryId" column="dormitoryId"/>
+        <result property="dormitoryNumber" column="dormitoryNumber"/>
+        <result property="dormitoryPhoto" column="dormitoryPhoto"/>
+        <result property="dormitoryPhotoDetail" column="dormitoryPhotoDetail"/>
+
+
+        <collection property="studentList" javaType="ArrayList"
+                    column="dormitoryId" ofType="com.mecol.dormitory.entity.Student"
+                    select="com.mecol.dormitory.dao.StudentDao.getStudentByDormitoryId"
+                    fetchType="eager"><!--这里如果是lazy 懒加载会造成json异常-->
+            <id property="id" column="id"/>
+            <!--只查询了课程名称-->
+            <result property="username" column="username"/>
+
+        </collection>
+    </resultMap>
+
+    <select id="getDormitoryById" resultType="com.mecol.dormitory.entity.Dormitory">
+        select * from tb_dormitory where dormitoryId=#{dormitoryId}
+    </select>
+
+    <select id="getAllDormitories" resultType="com.mecol.dormitory.entity.Dormitory">
+        select * from tb_dormitory
+    </select>
+
+    <select id="getDormitoryList" resultMap="dormitoryResultMap">
+        select * from tb_dormitory
+    </select>
+
+    <select id="checkDormitoryNumber" resultType="com.mecol.dormitory.entity.Dormitory">
+        select * from tb_dormitory where dormitoryNumber=#{dormitoryNumber}
+    </select>
+    <insert id="insertDormitory" parameterType="com.mecol.dormitory.entity.Dormitory">
+        insert into tb_dormitory(dormitoryNumber, dormitoryPhoto,dormitoryPhotoDetail)
+        VALUES(#{dormitoryNumber},#{dormitoryPhoto},#{dormitoryPhotoDetail})
+    </insert>
+    <delete id="deleteByDormitoryId">
+        delete from tb_dormitory where dormitoryId=#{dormitoryId}
+    </delete>
+</mapper>
